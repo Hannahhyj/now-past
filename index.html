@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>现在完成时 & 过去完成时 专项练习</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF导出库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         /* 打印全局隐藏交互元素 */
         @media print {
@@ -40,13 +42,20 @@
                 min-width: 130px;
             }
         }
+        /* 禁用查看解答按钮样式 */
+        .btn-disabled {
+            color:#94a3b8 !important;
+            text-decoration: none !important;
+            cursor:not-allowed !important;
+            pointer-events:none;
+        }
     </style>
 </head>
 <body class="bg-slate-50 max-w-4xl mx-auto px-4 py-8">
     <h1 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-6">现在完成时 vs 过去完成时 语法专项练习</h1>
 
     <!-- 语法讲解区域 -->
-    <section class="bg-white rounded-lg shadow p-6 mb-8 print:mb-6">
+    <section class="bg-white rounded-lg shadow p-6 mb-8 print:mb-6" id="printContent">
         <h2 class="text-xl font-semibold border-b pb-2 mb-4">📖 语法知识点讲解</h2>
 
         <div class="mb-5">
@@ -91,10 +100,13 @@
         </div>
     </section>
 
-    <!-- 控制按钮（不打印） -->
+    <!-- 控制按钮（不打印）【多格式导出】 -->
     <div class="no-print flex gap-3 flex-wrap mb-6">
         <button id="submitAll" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">提交答案批改</button>
         <button onclick="window.print()" class="bg-emerald-600 text-white px-5 py-2 rounded hover:bg-emerald-700">打印题目（仅试题）</button>
+        <button onclick="exportHtml()" class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600">导出HTML试题</button>
+        <button onclick="exportWord()" class="bg-violet-600 text-white px-5 py-2 rounded hover:bg-violet-700">导出Word(.doc)</button>
+        <button onclick="exportPdf()" class="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600">导出PDF</button>
         <button onclick="location.reload()" class="bg-slate-600 text-white px-5 py-2 rounded hover:bg-slate-700">刷新重新随机出题</button>
     </div>
 
@@ -226,7 +238,8 @@ fillList.forEach(item=>{
     <div class="question-block bg-white p-4 rounded shadow mb-4">
         <div class="font-medium mb-2">${qIndex}. ${questionHtml}</div>
         <div id="${id}_res" class="result-tip mt-2 no-print"></div>
-        <button class="no-print mt-2 text-blue-600 underline" onclick="toggleAnalysis('${id}')">查看解答</button>
+        <!-- 初始禁用查看解答按钮 -->
+        <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
         <div id="${id}_analysis" class="analysis-box hidden no-print">
             <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
         </div>
@@ -252,7 +265,8 @@ choiceList.forEach(item=>{
         <div class="no-print">${optsHtml}</div>
         <div class="print:hidden">${printOpts}</div>
         <div id="${id}_res" class="result-tip mt-2 no-print"></div>
-        <button class="no-print mt-2 text-blue-600 underline" onclick="toggleAnalysis('${id}')">查看解答</button>
+        <!-- 初始禁用查看解答按钮 -->
+        <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
         <div id="${id}_analysis" class="analysis-box hidden no-print">
             <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
         </div>
@@ -270,6 +284,28 @@ function toggleAnalysis(qid){
 
 // 提交批改逻辑
 document.getElementById("submitAll").onclick = function(){
+    let isAllFinished = true;
+    let emptyList = [];
+    // 第一步：校验所有题目是否全部作答
+    allQuestions.forEach(q=>{
+        let userAns = "";
+        if(q.type==="fill"){
+            userAns = document.getElementById(q.id).value.trim();
+        }else{
+            const sel = document.querySelector(`input[name="${q.id}"]:checked`);
+            userAns = sel ? sel.value : "";
+        }
+        if(userAns === ""){
+            isAllFinished = false;
+            emptyList.push(q.id.replace("q",""));
+        }
+    })
+    if(!isAllFinished){
+        alert(`还有第【${emptyList.join("、")}】题未完成，请答完全部题目再提交！`);
+        return;
+    }
+
+    // 全部完成，开始批改
     let right = 0;
     let total = allQuestions.length;
     allQuestions.forEach(q=>{
@@ -287,10 +323,134 @@ document.getElementById("submitAll").onclick = function(){
         }else{
             resDom.innerHTML = `<span class="wrong">❌ 回答错误</span>`;
         }
+        // 批改完成，解锁本题查看解答按钮
+        const btn = document.getElementById("btn_"+q.id);
+        btn.classList.remove("btn-disabled");
     })
     const scoreDom = document.getElementById("scoreBox");
     scoreDom.classList.remove("hidden");
     scoreDom.innerHTML = `✅ 批改完成！总分：${right}/${total} 得分：${(right/total*100).toFixed(0)} 分`;
+}
+
+// ========== 通用：构建纯净试题HTML文本（导出共用） ==========
+function getPureQuestionHtml(){
+    let content = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>现在完成时 & 过去完成时 练习题</title>
+<style>
+body{max-width: 820px;margin: 30px auto;padding:0 24px;font-size:16px;line-height:1.75;}
+h1{text-align:center;font-size:24px;}
+h2{font-size:20px;margin-top:32px;margin-bottom:12px;}
+h3{font-size:18px;margin-top:20px;margin-bottom:8px;}
+.question{margin:14px 0;}
+.blank{text-decoration:underline;padding:0 50px;}
+table{border-collapse: collapse;width:100%;margin:16px 0;}
+td,th{border:1px solid #333;padding:8px 12px;}
+ul{padding-left:22px;}
+</style>
+</head>
+<body>
+<h1>现在完成时 vs 过去完成时 语法专项练习</h1>
+
+<section>
+<h2>📖 语法知识点讲解</h2>
+<h3>一、现在完成时 (have/has + 过去分词)</h3>
+<ul>
+<li>核心含义：动作发生在<strong>过去</strong>，强调对<strong>现在</strong>造成的结果/影响；动作持续到现在。</li>
+<li>句型：肯定 sb. have/has done｜否定 haven’t/hasn’t done｜疑问 Have/Has sb. done?</li>
+<li>常见标志词：already, yet, ever, never, since, for, so far, recently, up to now</li>
+<li>例句：I have lived here for 5 years.（我已经住这里5年，现在依然住这）</li>
+</ul>
+
+<h3>二、过去完成时 (had + 过去分词)</h3>
+<ul>
+<li>核心含义：<strong>过去的过去</strong>。在某个过去动作之前就已经完成的动作。</li>
+<li>句型：肯定 sb. had done｜否定 hadn’t done｜疑问 Had sb. done?</li>
+<li>常搭配一般过去时使用，区分两层过去时间先后。</li>
+<li>例句：When he arrived, the train had left.（他到的时候【过去】，火车已经开走【更早的过去】）</li>
+</ul>
+
+<h3>三、关键区别</h3>
+<table>
+<tr><th>时态</th><th>时间参照点</th><th>结构</th></tr>
+<tr><td>现在完成时</td><td>以<strong>现在</strong>为参照</td><td>have / has + done</td></tr>
+<tr><td>过去完成时</td><td>以<strong>过去某个时间</strong>为参照（过去的过去）</td><td>had + done</td></tr>
+</table>
+</section>
+
+<h2>一、填空题（10题）</h2>
+`;
+    // 填空题目
+    fillList.forEach((item,idx)=>{
+        content += `<div class="question">${idx+1}. ${item.q}</div>`;
+    });
+    content += `<h2>二、单项选择题（10题）</h2>`;
+    // 选择题目
+    choiceList.forEach((item,idx)=>{
+        content += `<div class="question">${idx+11}. ${item.q}<br>${item.opts.join("　")}</div>`;
+    });
+    content += `</body></html>`;
+    return content;
+}
+
+// 1. 导出HTML试题
+function exportHtml(){
+    const content = getPureQuestionHtml();
+    const blob = new Blob([content], {type:"text/html;charset=utf-8"});
+    saveBlob(blob, "现在完成时_过去完成时_练习题.html");
+}
+
+// 2. 导出Word(.doc)
+function exportWord(){
+    const content = getPureQuestionHtml();
+    const blob = new Blob([content], {type:"application/msword;charset=utf-8"});
+    saveBlob(blob, "现在完成时_过去完成时_练习题.doc");
+}
+
+// 3. 【修复BUG】导出PDF
+function exportPdf(){
+    const pureHtml = getPureQuestionHtml();
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = pureHtml;
+    // 修复：垂直隐藏，不水平偏移，避免截图空白
+    tempDiv.style.width = "820px";
+    tempDiv.style.position = "absolute";
+    tempDiv.style.top = "-9999px";
+    tempDiv.style.left = "20px";
+    tempDiv.style.visibility = "visible";
+    document.body.appendChild(tempDiv);
+
+    const opt = {
+        margin: 12,
+        filename: "现在完成时_过去完成时_练习题.pdf",
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering:true
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    // 增加延时，等待DOM渲染完成
+    setTimeout(()=>{
+        html2pdf().set(opt).from(tempDiv).save().finally(()=>{
+            document.body.removeChild(tempDiv);
+        });
+    },300);
+}
+
+// 文件下载通用工具
+function saveBlob(blob, fileName){
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
 }
 </script>
 </body>
