@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现在完成时 & 过去完成时 专项练习</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 打印全局隐藏交互元素 */
+        @media print {
+            .no-print { display: none !important; }
+            .result-tip, .analysis-box { display: none !important; }
+            body { font-size: 14px; }
+            .question-block { break-inside: avoid; }
+        }
+        .correct { color: #16a34a; font-weight: bold; }
+        .wrong { color: #dc2626; font-weight: bold; }
+        .analysis-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin-top:8px;
+            border-radius: 6px;
+        }
+        /* 题目内联下划线输入框样式 */
+        .inline-blank {
+            border: none;
+            border-bottom: 2px solid #333;
+            outline: none;
+            min-width: 130px;
+            font-size: inherit;
+            padding: 0 4px;
+            background: transparent;
+        }
+        /* 打印时隐藏输入框，保留下划线 */
+        @media print {
+            .inline-blank {
+                visibility: hidden;
+                border-bottom: 2px solid #000 !important;
+                min-width: 130px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-6">现在完成时 vs 过去完成时 语法专项练习</h1>
+
+    <!-- 语法讲解区域 -->
+    <section class="bg-white rounded-lg shadow p-6 mb-8 print:mb-6">
+        <h2 class="text-xl font-semibold border-b pb-2 mb-4">📖 语法知识点讲解</h2>
+
+        <div class="mb-5">
+            <h3 class="text-lg font-medium text-blue-700">一、现在完成时 (have/has + 过去分词)</h3>
+            <ul class="list-disc pl-6 mt-2 space-y-1 text-slate-700">
+                <li>核心含义：动作发生在<strong>过去</strong>，强调对<strong>现在</strong>造成的结果/影响；动作持续到现在。</li>
+                <li>句型：肯定 sb. have/has done｜否定 haven’t/hasn’t done｜疑问 Have/Has sb. done?</li>
+                <li>常见标志词：already, yet, ever, never, since, for, so far, recently, up to now</li>
+                <li>例句：I have lived here for 5 years.（我已经住这里5年，现在依然住这）</li>
+            </ul>
+        </div>
+
+        <div class="mb-5">
+            <h3 class="text-lg font-medium text-rose-700">二、过去完成时 (had + 过去分词)</h3>
+            <ul class="list-disc pl-6 mt-2 space-y-1 text-slate-700">
+                <li>核心含义：<strong>过去的过去</strong>。在某个过去动作之前就已经完成的动作。</li>
+                <li>句型：肯定 sb. had done｜否定 hadn’t done｜疑问 Had sb. done?</li>
+                <li>常搭配一般过去时使用，区分两层过去时间先后。</li>
+                <li>例句：When he arrived, the train had left.（他到的时候【过去】，火车已经开走【更早的过去】）</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3 class="text-lg font-medium text-amber-700">三、关键区别</h3>
+            <table class="w-full border mt-2 text-sm">
+                <tr class="bg-slate-100">
+                    <th class="border p-2">时态</th>
+                    <th class="border p-2">时间参照点</th>
+                    <th class="border p-2">结构</th>
+                </tr>
+                <tr>
+                    <td class="border p-2">现在完成时</td>
+                    <td class="border p-2">以<strong>现在</strong>为参照</td>
+                    <td class="border p-2">have / has + done</td>
+                </tr>
+                <tr>
+                    <td class="border p-2">过去完成时</td>
+                    <td class="border p-2">以<strong>过去某个时间</strong>为参照（过去的过去）</td>
+                    <td class="border p-2">had + done</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 控制按钮（不打印） -->
+    <div class="no-print flex gap-3 flex-wrap mb-6">
+        <button id="submitAll" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">提交答案批改</button>
+        <button onclick="window.print()" class="bg-emerald-600 text-white px-5 py-2 rounded hover:bg-emerald-700">打印题目（仅试题）</button>
+        <button onclick="location.reload()" class="bg-slate-600 text-white px-5 py-2 rounded hover:bg-slate-700">刷新重新随机出题</button>
+    </div>
+
+    <!-- 得分展示（不打印） -->
+    <div id="scoreBox" class="no-print hidden bg-sky-100 p-4 rounded mb-6 text-lg font-medium"></div>
+
+    <!-- 习题容器 -->
+    <div id="questionContainer"></div>
+
+<script>
+// 填空题库（用______作为填空占位符）
+const fillBank = [
+    {q:"I ______ (finish) my homework already.（finish）",ans:"have finished",explain:"already是现在完成时标志，以现在为参照，用have done。"},
+    {q:"By the time she came, we ______ (eat) dinner.（eat）",ans:"had eaten",explain:"she came是过去动作，吃饭发生在来之前，过去的过去→过去完成时had done。"},
+    {q:"He ______ (live) in London since 2020.（live）",ans:"has lived",explain:"since+时间点，持续到现在，现在完成时。主语三单用has。"},
+    {q:"They ______ never ______ (visit) this museum before.（visit）",ans:"have; visited",explain:"never常用于现在完成时，表示迄今为止从未做过。"},
+    {q:"When I got to the shop, it ______ (close).（close）",ans:"had closed",explain:"关门发生在我到达（过去）之前，过去完成时。"},
+    {q:"______ you ______ (see) my pen anywhere?（see）",ans:"Have; seen",explain:"询问到现在为止是否见过某物，现在完成时一般疑问句。"},
+    {q:"She told me she ______ (read) that novel.（read）",ans:"had read",explain:"told是过去，看书发生在告诉之前，过去完成时。"},
+    {q:"We ______ (know) each other for ten years.（know）",ans:"have known",explain:"for+时间段，动作持续至今，现在完成时。"},
+    {q:"The rain ______ (stop) before we left home.（stop）",ans:"had stopped",explain:"离开家是过去，雨停更早，过去完成时。"},
+    {q:"Tom ______ not ______ (return) the book yet.（return）",ans:"has; returned",explain:"yet是现在完成时否定句标志。"},
+    {q:"By last year, he ______ (learn) French for 3 years.（learn）",ans:"had learned",explain:"by+过去时间，表示截止到过去某时，用过去完成时。"},
+    {q:"I ______ just ______ (receive) your message.（receive）",ans:"have; received",explain:"just刚刚，现在完成时常用标志。"}
+];
+
+// 选择题库
+const choiceBank = [
+    {
+        q:"( ) I ______ my homework. I can go out now.",
+        opts:["A. finished","B. have finished","C. had finished"],
+        ans:"B",
+        explain:"现在可以出门，强调过去做作业对现在造成影响，用现在完成时have finished。"
+    },
+    {
+        q:"( ) When the concert started, we ______ our seats.",
+        opts:["A. took","B. have taken","C. had taken"],
+        ans:"C",
+        explain:"音乐会开始（过去）之前我们就入座，过去的过去，过去完成时。"
+    },
+    {
+        q:"( ) He ______ in this city since he was 12.",
+        opts:["A. lives","B. has lived","C. had lived"],
+        ans:"B",
+        explain:"since引导时间状语，持续到现在，现在完成时。"
+    },
+    {
+        q:"( ) She said she ______ to Beijing twice.",
+        opts:["A. has been","B. had been","C. was"],
+        ans:"B",
+        explain:"said为过去动作，去过北京发生在说话之前，过去完成时。"
+    },
+    {
+        q:"( ) —Where is Mike? —He ______ to the library.",
+        opts:["A. went","B. has gone","C. had gone"],
+        ans:"B",
+        explain:"have gone to 表示去了某地（现在不在现场），现在完成时。"
+    },
+    {
+        q:"( ) By 9 o’clock yesterday, he ______ the report.",
+        opts:["A. wrote","B. has written","C. had written"],
+        ans:"C",
+        explain:"by + 过去时间点，截止到过去某时刻完成，过去完成时。"
+    },
+    {
+        q:"( ) We ______ never ______ such a beautiful park before.",
+        opts:["A. have; seen","B. had; seen","C. did; see"],
+        ans:"A",
+        explain:"before无过去参照时，常指迄今为止，使用现在完成时。"
+    },
+    {
+        q:"( ) The film ______ when we arrived at the cinema.",
+        opts:["A. started","B. has started","C. had started"],
+        ans:"C",
+        explain:"我们到达影院（过去），电影在此之前已经开始，过去完成时。"
+    },
+    {
+        q:"( ) ______ you ever ______ abroad?",
+        opts:["A. Did; travel","B. Have; travelled","C. Had; travelled"],
+        ans:"B",
+        explain:"ever询问人生到目前为止经历，标准现在完成时句型。"
+    },
+    {
+        q:"( ) He didn’t pass the exam because he ______ hard enough.",
+        opts:["A. doesn’t study","B. hasn’t studied","C. hadn’t studied"],
+        ans:"C",
+        explain:"没努力学习发生在考试失利（过去）之前，过去完成时否定。"
+    },
+    {
+        q:"( ) So far, we ______ more than 300 words.",
+        opts:["A. learned","B. have learned","C. had learned"],
+        ans:"B",
+        explain:"so far（迄今为止）是现在完成时标志性短语。"
+    },
+    {
+        q:"( ) I ______ breakfast before I left for work this morning.",
+        opts:["A. have eaten","B. ate","C. had eaten"],
+        ans:"C",
+        explain:"离开家上班是过去，吃早饭发生在离开之前，过去完成时。"
+    }
+];
+
+// 数组随机抽取函数
+function getRandomList(arr, num){
+    let copy = [...arr];
+    let res = [];
+    for(let i=0;i<num;i++){
+        let idx = Math.floor(Math.random()*copy.length);
+        res.push(copy.splice(idx,1)[0]);
+    }
+    return res;
+}
+
+const fillList = getRandomList(fillBank,10);
+const choiceList = getRandomList(choiceBank,10);
+
+let allQuestions = [];
+let html = "";
+let qIndex = 1;
+
+// 渲染填空题：把题目里的______替换成内嵌输入框
+html += `<h2 class="text-xl font-semibold mt-8 mb-4">一、填空题（10题）</h2>`;
+fillList.forEach(item=>{
+    const id = "q"+qIndex;
+    allQuestions.push({id,type:"fill",ans:item.ans,explain:item.explain});
+    // 替换占位符为行内输入框
+    const questionHtml = item.q.replace(/______/g, `<input class="inline-blank no-print" id="${id}">`);
+    html += `
+    <div class="question-block bg-white p-4 rounded shadow mb-4">
+        <div class="font-medium mb-2">${qIndex}. ${questionHtml}</div>
+        <div id="${id}_res" class="result-tip mt-2 no-print"></div>
+        <button class="no-print mt-2 text-blue-600 underline" onclick="toggleAnalysis('${id}')">查看解答</button>
+        <div id="${id}_analysis" class="analysis-box hidden no-print">
+            <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+        </div>
+    </div>
+    `;
+    qIndex++;
+})
+
+// 渲染选择题
+html += `<h2 class="text-xl font-semibold mt-10 mb-4">二、单项选择题（10题）</h2>`;
+choiceList.forEach(item=>{
+    const id = "q"+qIndex;
+    allQuestions.push({id,type:"choice",ans:item.ans,explain:item.explain});
+    let optsHtml = "";
+    item.opts.forEach(opt=>{
+        optsHtml += `<label class="block my-1 no-print"><input type="radio" name="${id}" value="${opt[0]}"> ${opt}</label>`
+    })
+    // 打印展示纯选项文本
+    let printOpts = item.opts.join("　");
+    html += `
+    <div class="question-block bg-white p-4 rounded shadow mb-4">
+        <div class="font-medium mb-2">${qIndex}. ${item.q}</div>
+        <div class="no-print">${optsHtml}</div>
+        <div class="print:hidden">${printOpts}</div>
+        <div id="${id}_res" class="result-tip mt-2 no-print"></div>
+        <button class="no-print mt-2 text-blue-600 underline" onclick="toggleAnalysis('${id}')">查看解答</button>
+        <div id="${id}_analysis" class="analysis-box hidden no-print">
+            <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+        </div>
+    </div>
+    `;
+    qIndex++;
+})
+document.getElementById("questionContainer").innerHTML = html;
+
+// 展开/收起解析
+function toggleAnalysis(qid){
+    const box = document.getElementById(qid+"_analysis");
+    box.classList.toggle("hidden");
+}
+
+// 提交批改逻辑
+document.getElementById("submitAll").onclick = function(){
+    let right = 0;
+    let total = allQuestions.length;
+    allQuestions.forEach(q=>{
+        let userAns = "";
+        if(q.type==="fill"){
+            userAns = document.getElementById(q.id).value.trim();
+        }else{
+            const sel = document.querySelector(`input[name="${q.id}"]:checked`);
+            userAns = sel ? sel.value : "";
+        }
+        const resDom = document.getElementById(q.id+"_res");
+        if(userAns.toLowerCase() === q.ans.toLowerCase()){
+            resDom.innerHTML = `<span class="correct">✅ 回答正确</span>`;
+            right++;
+        }else{
+            resDom.innerHTML = `<span class="wrong">❌ 回答错误</span>`;
+        }
+    })
+    const scoreDom = document.getElementById("scoreBox");
+    scoreDom.classList.remove("hidden");
+    scoreDom.innerHTML = `✅ 批改完成！总分：${right}/${total} 得分：${(right/total*100).toFixed(0)} 分`;
+}
+</script>
+</body>
+</html>
