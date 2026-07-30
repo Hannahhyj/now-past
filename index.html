@@ -62,7 +62,7 @@
             <h3 class="text-lg font-medium text-blue-700">一、现在完成时 (have/has + 过去分词)</h3>
             <ul class="list-disc pl-6 mt-2 space-y-1 text-slate-700">
                 <li>核心含义：动作发生在<strong>过去</strong>，强调对<strong>现在</strong>造成的结果/影响；动作持续到现在。</li>
-                <li>句型：肯定 sb. have/has done｜否定 haven’t/hasn’t done｜疑问 Have/Has sb. done?</li>
+                <li>句型：肯定 sb. have/has done｜否定 haven't/hasn't done｜疑问 Have/Has sb. done?</li>
                 <li>常见标志词：already, yet, ever, never, since, for, so far, recently, up to now</li>
                 <li>例句：I have lived here for 5 years.（我已经住这里5年，现在依然住这）</li>
             </ul>
@@ -72,7 +72,7 @@
             <h3 class="text-lg font-medium text-rose-700">二、过去完成时 (had + 过去分词)</h3>
             <ul class="list-disc pl-6 mt-2 space-y-1 text-slate-700">
                 <li>核心含义：<strong>过去的过去</strong>。在某个过去动作之前就已经完成的动作。</li>
-                <li>句型：肯定 sb. had done｜否定 hadn’t done｜疑问 Had sb. done?</li>
+                <li>句型：肯定 sb. had done｜否定 hadn't done｜疑问 Had sb. done?</li>
                 <li>常搭配一般过去时使用，区分两层过去时间先后。</li>
                 <li>例句：When he arrived, the train had left.（他到的时候【过去】，火车已经开走【更早的过去】）</li>
             </ul>
@@ -106,7 +106,7 @@
         <button onclick="exportHtml()" class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600">导出HTML试题</button>
         <button onclick="exportWord()" class="bg-violet-600 text-white px-5 py-2 rounded hover:bg-violet-700">导出Word(.doc)</button>
         <button onclick="exportPdf()" class="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600">导出PDF</button>
-        <button onclick="location.reload()" class="bg-slate-600 text-white px-5 py-2 rounded hover:bg-slate-700">刷新重新随机出题</button>
+        <button onclick="generateQuiz()" class="bg-slate-600 text-white px-5 py-2 rounded hover:bg-slate-700">重新出题</button>
     </div>
 
     <!-- 得分展示（不打印） -->
@@ -116,7 +116,7 @@
     <div id="questionContainer"></div>
 
 <script>
-// 填空题库（用______作为填空占位符）
+// ========== 填空题库（用______作为填空占位符）==========
 const fillBank = [
     {q:"I ______ (finish) my homework already.（finish）",ans:"have finished",explain:"already是现在完成时标志，以现在为参照，用have done。"},
     {q:"By the time she came, we ______ (eat) dinner.（eat）",ans:"had eaten",explain:"she came是过去动作，吃饭发生在来之前，过去的过去→过去完成时had done。"},
@@ -129,10 +129,29 @@ const fillBank = [
     {q:"The rain ______ (stop) before we left home.（stop）",ans:"had stopped",explain:"离开家是过去，雨停更早，过去完成时。"},
     {q:"Tom ______ not ______ (return) the book yet.（return）",ans:"has; returned",explain:"yet是现在完成时否定句标志。"},
     {q:"By last year, he ______ (learn) French for 3 years.（learn）",ans:"had learned",explain:"by+过去时间，表示截止到过去某时，用过去完成时。"},
-    {q:"I ______ just ______ (receive) your message.（receive）",ans:"have; received",explain:"just刚刚，现在完成时常用标志。"}
+    {q:"I ______ just ______ (receive) your message.（receive）",ans:"have; received",explain:"just刚刚，现在完成时常用标志。"},
+    // —— 以下为扩充题目 ——
+    {q:"She ______ (write) three letters since this morning.（write）",ans:"has written",explain:"since this morning持续到现在，主语三单，现在完成时has written。"},
+    {q:"By the time the teacher arrived, the students ______ (finish) the test.（finish）",ans:"had finished",explain:"老师到达是过去，学生完成测试更早，过去完成时had finished。"},
+    {q:"I ______ (not see) him for a long time.（not see）",ans:"haven't seen",explain:"for a long time持续到现在为止，否定用haven't seen。"},
+    {q:"When we reached the station, the train ______ (leave).（leave）",ans:"had left",explain:"到达车站是过去，火车离开更早，过去完成时had left。"},
+    {q:"By 2019, they ______ (build) ten new schools.（build）",ans:"had built",explain:"by+过去时间点，截止到过去某时完成，过去完成时had built。"},
+    {q:"He ______ (already eat) when I invited him for dinner.（already eat）",ans:"had already eaten",explain:"邀请吃饭是过去，他之前已经吃过，过去的过去，过去完成时。"},
+    {q:"We ______ (be) friends since childhood.（be）",ans:"have been",explain:"since childhood持续到现在，现在完成时have been。"},
+    {q:"The meeting ______ (begin) before I got to the office.（begin）",ans:"had begun",explain:"我到办公室是过去，会议开始更早，过去完成时had begun。"},
+    {q:"She ______ (lose) her keys and can't get in.（lose）",ans:"has lost",explain:"现在进不了门，强调丢钥匙对现在的影响，现在完成时has lost。"},
+    {q:"By the time help arrived, the ship ______ (sink).（sink）",ans:"had sunk",explain:"救援到达是过去，沉船更早，过去完成时had sunk。"},
+    {q:"I ______ never ______ (be) to Japan before.（be）",ans:"have; been",explain:"never+before表示迄今为止从未，现在完成时have been。"},
+    {q:"He told me that he ______ (buy) a new car.（buy）",ans:"had bought",explain:"told是过去，买车发生在告诉之前，过去完成时had bought。"},
+    {q:"______ she ______ (finish) the report yet?（finish）",ans:"Has; finished",explain:"yet用于疑问句询问到现在为止是否完成，主语三单用Has。"},
+    {q:"The children ______ (do) their homework by 8 o'clock.（do）",ans:"had done",explain:"by 8 o'clock（过去时间点），截止到过去某时，过去完成时had done。"},
+    {q:"We ______ (wait) for two hours when the bus finally came.（wait）",ans:"had waited",explain:"公交车来是过去，等待发生在此之前，过去完成时had waited。"},
+    {q:"She ______ (not reply) to my email so far.（not reply）",ans:"hasn't replied",explain:"so far是现在完成时标志，主语三单否定用hasn't replied。"},
+    {q:"By 2020, they ______ (plant) thousands of trees.（plant）",ans:"had planted",explain:"by+过去时间点，截止到过去某时，过去完成时had planted。"},
+    {q:"I realized I ______ (forget) to lock the door.（forget）",ans:"had forgotten",explain:"意识到是过去，忘记锁门发生在意识到之前，过去完成时had forgotten。"}
 ];
 
-// 选择题库
+// ========== 选择题库 ==========
 const choiceBank = [
     {
         q:"( ) I ______ my homework. I can go out now.",
@@ -165,7 +184,7 @@ const choiceBank = [
         explain:"have gone to 表示去了某地（现在不在现场），现在完成时。"
     },
     {
-        q:"( ) By 9 o’clock yesterday, he ______ the report.",
+        q:"( ) By 9 o'clock yesterday, he ______ the report.",
         opts:["A. wrote","B. has written","C. had written"],
         ans:"C",
         explain:"by + 过去时间点，截止到过去某时刻完成，过去完成时。"
@@ -189,8 +208,8 @@ const choiceBank = [
         explain:"ever询问人生到目前为止经历，标准现在完成时句型。"
     },
     {
-        q:"( ) He didn’t pass the exam because he ______ hard enough.",
-        opts:["A. doesn’t study","B. hasn’t studied","C. hadn’t studied"],
+        q:"( ) He didn't pass the exam because he ______ hard enough.",
+        opts:["A. doesn't study","B. hasn't studied","C. hadn't studied"],
         ans:"C",
         explain:"没努力学习发生在考试失利（过去）之前，过去完成时否定。"
     },
@@ -205,10 +224,119 @@ const choiceBank = [
         opts:["A. have eaten","B. ate","C. had eaten"],
         ans:"C",
         explain:"离开家上班是过去，吃早饭发生在离开之前，过去完成时。"
+    },
+    // —— 以下为扩充题目 ——
+    {
+        q:"( ) She ______ her keys, so she can't open the door.",
+        opts:["A. lost","B. has lost","C. had lost"],
+        ans:"B",
+        explain:"现在打不开门，强调丢钥匙对现在的影响，现在完成时has lost。"
+    },
+    {
+        q:"( ) By the time I got home, my family ______ dinner.",
+        opts:["A. finished","B. have finished","C. had finished"],
+        ans:"C",
+        explain:"我到家是过去，家人吃完饭更早，过去完成时had finished。"
+    },
+    {
+        q:"( ) They ______ in this school for five years.",
+        opts:["A. have studied","B. had studied","C. studied"],
+        ans:"A",
+        explain:"for five years持续到现在，现在完成时have studied。"
+    },
+    {
+        q:"( ) The plane ______ when we arrived at the airport.",
+        opts:["A. took off","B. has taken off","C. had taken off"],
+        ans:"C",
+        explain:"到达机场是过去，飞机起飞更早，过去完成时had taken off。"
+    },
+    {
+        q:"( ) I ______ my grandmother twice this month.",
+        opts:["A. visited","B. have visited","C. had visited"],
+        ans:"B",
+        explain:"this month截止到现在，现在完成时have visited。"
+    },
+    {
+        q:"( ) He said he ______ the book already.",
+        opts:["A. has read","B. had read","C. read"],
+        ans:"B",
+        explain:"said是过去，读书发生在说话之前，过去完成时had read。"
+    },
+    {
+        q:"( ) We ______ each other since we were kids.",
+        opts:["A. knew","B. have known","C. had known"],
+        ans:"B",
+        explain:"since we were kids持续到现在，现在完成时have known。"
+    },
+    {
+        q:"( ) When the police arrived, the thief ______.",
+        opts:["A. escaped","B. has escaped","C. had escaped"],
+        ans:"C",
+        explain:"警察到达是过去，小偷逃跑更早，过去完成时had escaped。"
+    },
+    {
+        q:"( ) She ______ 5 pounds since she started dieting.",
+        opts:["A. lost","B. has lost","C. had lost"],
+        ans:"B",
+        explain:"since she started dieting持续到现在，现在完成时has lost。"
+    },
+    {
+        q:"( ) By the end of last year, they ______ 100 houses.",
+        opts:["A. built","B. have built","C. had built"],
+        ans:"C",
+        explain:"by the end of last year是过去时间点，过去完成时had built。"
+    },
+    {
+        q:"( ) ______ you ______ your room yet?",
+        opts:["A. Did; clean","B. Have; cleaned","C. Had; cleaned"],
+        ans:"B",
+        explain:"yet询问到现在为止是否完成，现在完成时Have cleaned。"
+    },
+    {
+        q:"( ) The sun ______ before we started our journey.",
+        opts:["A. rose","B. has risen","C. had risen"],
+        ans:"C",
+        explain:"出发旅行是过去，日出更早，过去完成时had risen。"
+    },
+    {
+        q:"( ) I ______ never ______ sushi before.",
+        opts:["A. have; eaten","B. had; eaten","C. did; eat"],
+        ans:"A",
+        explain:"never+before指到目前为止从未，现在完成时have eaten。"
+    },
+    {
+        q:"( ) She ______ her degree before she got the job.",
+        opts:["A. has completed","B. completed","C. had completed"],
+        ans:"C",
+        explain:"得到工作是过去，完成学位更早，过去完成时had completed。"
+    },
+    {
+        q:"( ) They ______ in Beijing since 2015.",
+        opts:["A. have lived","B. had lived","C. live"],
+        ans:"A",
+        explain:"since 2015持续到现在，现在完成时have lived。"
+    },
+    {
+        q:"( ) When I woke up, it ______ already ______.",
+        opts:["A. has; rained","B. had; rained","C. did; rain"],
+        ans:"B",
+        explain:"醒来是过去，下雨更早，过去完成时had rained。"
+    },
+    {
+        q:"( ) He ______ his wallet, so he can't pay now.",
+        opts:["A. lost","B. has lost","C. had lost"],
+        ans:"B",
+        explain:"现在无法付款，强调丢钱包对现在的影响，现在完成时has lost。"
+    },
+    {
+        q:"( ) By the time she was 30, she ______ five countries.",
+        opts:["A. visited","B. has visited","C. had visited"],
+        ans:"C",
+        explain:"by the time she was 30是过去时间点，过去完成时had visited。"
     }
 ];
 
-// 数组随机抽取函数
+// ========== 随机抽取函数（从数组中随机取num个不重复元素）==========
 function getRandomList(arr, num){
     let copy = [...arr];
     let res = [];
@@ -219,61 +347,97 @@ function getRandomList(arr, num){
     return res;
 }
 
-const fillList = getRandomList(fillBank,10);
-const choiceList = getRandomList(choiceBank,10);
-
+// ========== 模块级变量：当前展示的题目列表（导出函数也引用）==========
+let fillList = [];
+let choiceList = [];
 let allQuestions = [];
-let html = "";
-let qIndex = 1;
 
-// 渲染填空题：把题目里的______替换成内嵌输入框
-html += `<h2 class="text-xl font-semibold mt-8 mb-4">一、填空题（10题）</h2>`;
-fillList.forEach(item=>{
-    const id = "q"+qIndex;
-    allQuestions.push({id,type:"fill",ans:item.ans,explain:item.explain});
-    // 替换占位符为行内输入框
-    const questionHtml = item.q.replace(/______/g, `<input class="inline-blank no-print" id="${id}">`);
-    html += `
-    <div class="question-block bg-white p-4 rounded shadow mb-4">
-        <div class="font-medium mb-2">${qIndex}. ${questionHtml}</div>
-        <div id="${id}_res" class="result-tip mt-2 no-print"></div>
-        <!-- 初始禁用查看解答按钮 -->
-        <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
-        <div id="${id}_analysis" class="analysis-box hidden no-print">
-            <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+// ========== 核心：生成/重新生成一套题目 ==========
+function generateQuiz(){
+    // --- 利用 sessionStorage 排除上一轮已出题目，确保连续刷新题目不同 ---
+    let usedFill = JSON.parse(sessionStorage.getItem("usedFill") || "[]");
+    let usedChoice = JSON.parse(sessionStorage.getItem("usedChoice") || "[]");
+
+    // 从题库中过滤掉已用过的题（按题目文本去重）
+    let poolFill = fillBank.filter(q => !usedFill.includes(q.q));
+    let poolChoice = choiceBank.filter(q => !usedChoice.includes(q.q));
+
+    // 如果剩余题目不足10道，说明该轮已用尽，重置记录从头来
+    if(poolFill.length < 10){
+        poolFill = [...fillBank];
+        usedFill = [];
+    }
+    if(poolChoice.length < 10){
+        poolChoice = [...choiceBank];
+        usedChoice = [];
+    }
+
+    fillList = getRandomList(poolFill, 10);
+    choiceList = getRandomList(poolChoice, 10);
+
+    // 把本轮题目文本存入 sessionStorage，供下一轮排除
+    sessionStorage.setItem("usedFill", JSON.stringify([...usedFill, ...fillList.map(q=>q.q)]));
+    sessionStorage.setItem("usedChoice", JSON.stringify([...usedChoice, ...choiceList.map(q=>q.q)]));
+
+    // --- 渲染题目 ---
+    allQuestions = [];
+    let html = "";
+    let qIndex = 1;
+
+    // 渲染填空题：把题目里的______替换成内嵌输入框
+    html += `<h2 class="text-xl font-semibold mt-8 mb-4">一、填空题（10题）</h2>`;
+    fillList.forEach(item=>{
+        const id = "q"+qIndex;
+        allQuestions.push({id,type:"fill",ans:item.ans,explain:item.explain});
+        const questionHtml = item.q.replace(/______/g, `<input class="inline-blank no-print" id="${id}">`);
+        html += `
+        <div class="question-block bg-white p-4 rounded shadow mb-4">
+            <div class="font-medium mb-2">${qIndex}. ${questionHtml}</div>
+            <div id="${id}_res" class="result-tip mt-2 no-print"></div>
+            <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
+            <div id="${id}_analysis" class="analysis-box hidden no-print">
+                <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+            </div>
         </div>
-    </div>
-    `;
-    qIndex++;
-})
-
-// 渲染选择题
-html += `<h2 class="text-xl font-semibold mt-10 mb-4">二、单项选择题（10题）</h2>`;
-choiceList.forEach(item=>{
-    const id = "q"+qIndex;
-    allQuestions.push({id,type:"choice",ans:item.ans,explain:item.explain});
-    let optsHtml = "";
-    item.opts.forEach(opt=>{
-        optsHtml += `<label class="block my-1 no-print"><input type="radio" name="${id}" value="${opt[0]}"> ${opt}</label>`
+        `;
+        qIndex++;
     })
-    // 打印展示纯选项文本
-    let printOpts = item.opts.join("　");
-    html += `
-    <div class="question-block bg-white p-4 rounded shadow mb-4">
-        <div class="font-medium mb-2">${qIndex}. ${item.q}</div>
-        <div class="no-print">${optsHtml}</div>
-        <div class="print:hidden">${printOpts}</div>
-        <div id="${id}_res" class="result-tip mt-2 no-print"></div>
-        <!-- 初始禁用查看解答按钮 -->
-        <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
-        <div id="${id}_analysis" class="analysis-box hidden no-print">
-            <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+
+    // 渲染选择题
+    html += `<h2 class="text-xl font-semibold mt-10 mb-4">二、单项选择题（10题）</h2>`;
+    choiceList.forEach(item=>{
+        const id = "q"+qIndex;
+        allQuestions.push({id,type:"choice",ans:item.ans,explain:item.explain});
+        let optsHtml = "";
+        item.opts.forEach(opt=>{
+            optsHtml += `<label class="block my-1 no-print"><input type="radio" name="${id}" value="${opt[0]}"> ${opt}</label>`
+        })
+        let printOpts = item.opts.join("　");
+        html += `
+        <div class="question-block bg-white p-4 rounded shadow mb-4">
+            <div class="font-medium mb-2">${qIndex}. ${item.q}</div>
+            <div class="no-print">${optsHtml}</div>
+            <div class="print:hidden">${printOpts}</div>
+            <div id="${id}_res" class="result-tip mt-2 no-print"></div>
+            <button class="no-print mt-2 text-blue-600 underline btn-disabled" id="btn_${id}" onclick="toggleAnalysis('${id}')">查看解答</button>
+            <div id="${id}_analysis" class="analysis-box hidden no-print">
+                <strong>标准答案：${item.ans}</strong><br>解析：${item.explain}
+            </div>
         </div>
-    </div>
-    `;
-    qIndex++;
-})
-document.getElementById("questionContainer").innerHTML = html;
+        `;
+        qIndex++;
+    })
+
+    document.getElementById("questionContainer").innerHTML = html;
+
+    // 重置得分框（隐藏）
+    const scoreDom = document.getElementById("scoreBox");
+    scoreDom.classList.add("hidden");
+    scoreDom.innerHTML = "";
+}
+
+// 首次加载生成题目
+generateQuiz();
 
 // 展开/收起解析
 function toggleAnalysis(qid){
@@ -322,7 +486,6 @@ document.getElementById("submitAll").onclick = function(){
         }else{
             resDom.innerHTML = `<span class="wrong">❌ 回答错误</span>`;
         }
-        // 批改完成，解锁本题查看解答按钮
         const btn = document.getElementById("btn_"+q.id);
         btn.classList.remove("btn-disabled");
     })
@@ -359,7 +522,7 @@ ul{padding-left:22px;}
 <h3>一、现在完成时 (have/has + 过去分词)</h3>
 <ul>
 <li>核心含义：动作发生在<strong>过去</strong>，强调对<strong>现在</strong>造成的结果/影响；动作持续到现在。</li>
-<li>句型：肯定 sb. have/has done｜否定 haven’t/hasn’t done｜疑问 Have/Has sb. done?</li>
+<li>句型：肯定 sb. have/has done｜否定 haven't/hasn't done｜疑问 Have/Has sb. done?</li>
 <li>常见标志词：already, yet, ever, never, since, for, so far, recently, up to now</li>
 <li>例句：I have lived here for 5 years.（我已经住这里5年，现在依然住这）</li>
 </ul>
@@ -367,7 +530,7 @@ ul{padding-left:22px;}
 <h3>二、过去完成时 (had + 过去分词)</h3>
 <ul>
 <li>核心含义：<strong>过去的过去</strong>。在某个过去动作之前就已经完成的动作。</li>
-<li>句型：肯定 sb. had done｜否定 hadn’t done｜疑问 Had sb. done?</li>
+<li>句型：肯定 sb. had done｜否定 hadn't done｜疑问 Had sb. done?</li>
 <li>常搭配一般过去时使用，区分两层过去时间先后。</li>
 <li>例句：When he arrived, the train had left.（他到的时候【过去】，火车已经开走【更早的过去】）</li>
 </ul>
@@ -414,7 +577,6 @@ function exportPdf(){
     const pureHtml = getPureQuestionHtml();
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = pureHtml;
-    // 修复：垂直隐藏，不水平偏移，避免截图空白
     tempDiv.style.width = "820px";
     tempDiv.style.position = "absolute";
     tempDiv.style.top = "-9999px";
@@ -426,14 +588,13 @@ function exportPdf(){
         margin: 12,
         filename: "现在完成时_过去完成时_练习题.pdf",
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
+        html2canvas: {
             scale: 2,
             useCORS: true,
             letterRendering:true
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    // 增加延时，等待DOM渲染完成
     setTimeout(()=>{
         html2pdf().set(opt).from(tempDiv).save().finally(()=>{
             document.body.removeChild(tempDiv);
